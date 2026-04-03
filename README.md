@@ -2,7 +2,7 @@
 
 > Beautiful, interactive cheatsheets for developers — no frameworks, no build step, no tracking.
 
-**Live site → [Ratanxsarkar1.github.io/devsheets](https://github.com/Ratanxsarkar1/devsheets)**
+**Live site → [Ratanxsarkar1.github.io/devsheets](https://ratanxsarkar1.github.io/devsheets/)**
 
 ---
 
