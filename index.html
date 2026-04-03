@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="DevSheets — Beautiful interactive cheatsheets for developers. Git, Docker, Linux, and more.">
+<title>DevSheets — Developer Cheatsheets</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0a0c10;
+    --surface:  #10131a;
+    --surface2: #171b26;
+    --border:   #1e2535;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --accent:   #00e5ff;
+    --accent2:  #ff6b35;
+    --accent3:  #a8ff78;
+    --accent4:  #a855f7;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Dot-grid background ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: radial-gradient(rgba(0,229,255,0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+  }
+
+  /* ── Animated gradient orbs ── */
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(100px); pointer-events: none; z-index: 0;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb-1 { width:700px; height:700px; background:rgba(0,229,255,0.05);  top:-300px; left:-200px; animation-delay:0s; }
+  .orb-2 { width:500px; height:500px; background:rgba(255,107,53,0.05); bottom:-200px; right:-100px; animation-delay:-4s; }
+  .orb-3 { width:400px; height:400px; background:rgba(168,85,247,0.04); top:50%; left:40%; animation-delay:-8s; }
+  @keyframes drift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(30px,20px) scale(1.05); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+    background: rgba(10,12,16,0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px; font-weight: 700;
+    color: var(--text); text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(0,229,255,0.4); }
+    50%      { opacity:.7; box-shadow: 0 0 0 6px rgba(0,229,255,0); }
+  }
+  .nav-links {
+    display: flex; gap: 32px; list-style: none;
+  }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    text-decoration: none; letter-spacing: 0.05em;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-gh {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--text);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 7px 14px; border-radius: 8px;
+    transition: all .2s;
+  }
+  .nav-gh:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; z-index: 10;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 100px 24px 60px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(0,229,255,0.25);
+    background: rgba(0,229,255,0.06);
+    padding: 7px 18px; border-radius: 100px;
+    margin-bottom: 36px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s infinite;
+  }
+
+  .hero-title {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 800; line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .line2 {
+    display: block;
+    background: linear-gradient(90deg, var(--accent), var(--accent4), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(13px, 1.5vw, 15px);
+    color: var(--muted); line-height: 1.7;
+    max-width: 520px; margin: 0 auto 44px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-sub em { color: var(--text); font-style: normal; }
+
+  .hero-cta {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: var(--bg);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 700;
+    padding: 13px 28px; border-radius: 10px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all .2s; letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { background: #33ebff; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,229,255,0.3); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    padding: 13px 28px; border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: all .2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    position: relative; z-index: 10;
+    display: flex; justify-content: center; gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat-item {
+    flex: 1; max-width: 220px;
+    padding: 28px 24px; text-align: center;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px; font-weight: 700;
+    color: var(--accent); line-height: 1;
+    margin-bottom: 6px;
+  }
+  .stat-lbl {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  section {
+    position: relative; z-index: 10;
+    max-width: 1160px; margin: 0 auto;
+    padding: 80px 24px;
+  }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+  }
+  .section-label::before {
+    content: ''; width: 20px; height: 1px; background: var(--muted);
+  }
+  .section-title {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800; letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .section-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 48px;
+  }
+
+  /* ── CHEATSHEET CARDS ── */
+  .sheets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .sheet-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex; flex-direction: column; gap: 16px;
+    overflow: hidden;
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    group: true;
+  }
+  .sheet-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--card-color, #00e5ff) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .sheet-card:hover {
+    border-color: var(--card-color, var(--accent));
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  .sheet-card:hover::before { opacity: 0.04; }
+
+  /* AVAILABLE card */
+  .sheet-card.available { cursor: pointer; }
+
+  /* COMING SOON card */
+  .sheet-card.soon {
+    cursor: default;
+    opacity: 0.55;
+  }
+  .sheet-card.soon:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--border);
+  }
+  .sheet-card.soon::before { display: none; }
+
+  .card-top {
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .card-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .badge-live {
+    background: rgba(168,255,120,0.12);
+    color: var(--accent3);
+    border: 1px solid rgba(168,255,120,0.25);
+  }
+  .badge-soon {
+    background: rgba(100,116,139,0.12);
+    color: var(--muted);
+    border: 1px solid rgba(100,116,139,0.2);
+  }
+
+  .card-name {
+    font-size: 20px; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 6px;
+  }
+  .card-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .card-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .card-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .card-count span {
+    font-weight: 700; color: var(--text);
+  }
+  .card-arrow {
+    width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 14px;
+    transition: all .2s;
+  }
+  .sheet-card.available:hover .card-arrow {
+    background: var(--card-color, var(--accent));
+    border-color: var(--card-color, var(--accent));
+    color: var(--bg);
+  }
+
+  /* Tags */
+  .card-tags {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; padding: 3px 8px;
+    border-radius: 4px; border: 1px solid var(--border);
+    color: var(--muted); background: var(--surface2);
+  }
+
+  /* ── FEATURES STRIP ── */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-top: 80px;
+  }
+  .feature {
+    background: var(--surface);
+    padding: 32px 28px;
+  }
+  .feature-icon {
+    font-size: 24px; margin-bottom: 14px;
+    display: block;
+  }
+  .feature-title {
+    font-size: 15px; font-weight: 700;
+    margin-bottom: 8px; letter-spacing: -0.01em;
+  }
+  .feature-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 10;
+    border-top: 1px solid var(--border);
+    padding: 40px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-left {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+  }
+  .footer-left strong { color: var(--text); }
+  .footer-links {
+    display: flex; gap: 24px; list-style: none;
+  }
+  .footer-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    text-decoration: none; transition: color .2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    footer { flex-direction: column; padding: 32px 20px; }
+    .stats-strip { flex-wrap: wrap; }
+    .stat-item { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <span class="nav-logo-dot"></span>DevSheets
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sheets">Cheatsheets</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="https://github.com/Ratanxsarkar1/devsheets" target="_blank">GitHub</a></li>
+  </ul>
+  <a class="nav-gh" href="https://github.com/Ratanxsarkar1/devsheets" target="_blank">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+    Star on GitHub
+  </a>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-eyebrow">Open Source · Free Forever · No Signup</div>
+  <h1 class="hero-title">
+    <span class="line1">The only cheatsheet</span>
+    <span class="line2">site you'll ever need</span>
+  </h1>
+  <p class="hero-sub">
+    Beautiful, interactive reference cards for <em>every dev tool</em> you use.
+    Search, copy, and learn — no fluff, no ads, no login.
+  </p>
+  <div class="hero-cta">
+    <a class="btn-primary" href="#sheets">Browse Cheatsheets ↓</a>
+    <a class="btn-ghost" href="https://github.com/Ratanxsarkar1/devsheets" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+</div>
+
+<!-- ── STATS ── -->
+<div class="stats-strip reveal">
+  <div class="stat-item">
+    <div class="stat-num" id="cnt-sheets">1</div>
+    <div class="stat-lbl">Cheatsheets</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">27+</div>
+    <div class="stat-lbl">Commands Covered</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">100%</div>
+    <div class="stat-lbl">Free & Open Source</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">0</div>
+    <div class="stat-lbl">Ads / Tracking</div>
+  </div>
+</div>
+
+<!-- ── CHEATSHEETS ── -->
+<section id="sheets">
+  <div class="reveal">
+    <div class="section-label">Reference Library</div>
+    <h2 class="section-title">All Cheatsheets</h2>
+    <p class="section-sub">// click any card to open the full interactive reference</p>
+  </div>
+
+  <div class="sheets-grid">
+
+    <!-- ✅ LIVE: Git -->
+    <a class="sheet-card available reveal"
+       href="cheatsheets/git.html"
+       style="--card-color:#f05033">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(240,80,51,0.12); color:#f05033">⎇</div>
+        <span class="card-badge badge-live">Live</span>
+      </div>
+      <div>
+        <div class="card-name">Git</div>
+        <div class="card-desc">Version control essentials — init, branch, merge, rebase and everything in between.</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">vcs</span>
+        <span class="tag">terminal</span>
+        <span class="tag">branching</span>
+      </div>
+      <div class="card-meta">
+        <div class="card-count"><span>27</span> commands · 6 categories</div>
+        <div class="card-arrow">→</div>
+      </div>
+    </a>
+
+    <!-- 🔜 COMING: Linux -->
+    <div class="sheet-card soon reveal" style="--card-color:#f5a623">
+      <div class="card-top">
+        <div class="card-icon" style="background:rgba(245,166,35,0.12); color:#f5a623">🐧</div>
+        <span class="card-badge badge-soon">Coming Soon</span>
+      </div>
+      <div>
+        <div class="card-name">Linux CLI</div>
+        <div class="card-desc">File system, permissions, processes, networking, and essential bash commands.</div>
+      </div>
+      <div class="card-tags">
+        <span class="tag">bash</span>
+        <span class="tag">unix</span>
+        <span class="tag">shell</span>
+      </div>
+      <div class="card-meta">
+        <div class="card-count"><span>~50</span> commands planned</div>
+        <div class="card-arrow" style="opacity:.3">→</div>
+      </div>
+    </div>
+
+  </div><!-- /sheets-grid -->
+
+  <!-- ── FEATURES ── -->
+  <div class="features reveal" id="features" style="margin-top:80px">
+    <div class="feature">
+      <span class="feature-icon">⚡</span>
+      <div class="feature-title">Instant Search</div>
+      <div class="feature-desc">Filter any cheatsheet by command name, description, or keyword in real time.</div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">📋</span>
+      <div class="feature-title">One-click Copy</div>
+      <div class="feature-desc">Copy any command or example directly to your clipboard without selecting text.</div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">📖</span>
+      <div class="feature-title">Plain-English Docs</div>
+      <div class="feature-desc">Every command explained simply with a real-world scenario and official docs link.</div>
+    </div>
+    <div class="feature">
+      <span class="feature-icon">🌐</span>
+      <div class="feature-title">Works Offline</div>
+      <div class="feature-desc">Pure HTML + CSS + JS — no framework, no build step. Open the file and go.</div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">
+    <strong>DevSheets</strong> — open source, forever free.<br>
+    Built with ♥ and zero dependencies.
+  </div>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="https://github.com/Ratanxsarkar1/devsheets" target="_blank">GitHub</a></li>
+    <li><a href="https://github.com/Ratanxsarkar1/devsheets/issues" target="_blank">Request a Sheet</a></li>
+  </ul>
+</footer>
+
+<script>
+  /* Intersection Observer reveal */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
