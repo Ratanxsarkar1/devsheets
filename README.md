@@ -10,8 +10,8 @@
 
 | Sheet | Status | Commands |
 |-------|--------|----------|
-| [Git](cheatsheets/git.html) | 
-| Linux CLI | 🔜 Coming Soon | — |
+| [Git](cheatsheets/git.html) | ✅ Live | 27 commands, 6 categories |
+| Docker | 🔜 Coming Soon | — |
 
 
 ---
